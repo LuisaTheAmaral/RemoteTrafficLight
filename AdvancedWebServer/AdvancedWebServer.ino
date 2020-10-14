@@ -7,10 +7,10 @@
  * my Arduino Course at Udemy.com here: http://robojax.com/L/?id=62
 
  * Written by Ahmad Shamshiri on Feb 22, 2020 at 15:25
- * Adapted by Luísa Amaral and Hugo Leal
  * in Ajax, Ontario, Canada. www.robojax.com
+ * Adapted by Luísa Amaral and Hugo Leal
  * 
-
+ * 
  * Get this code and other Arduino codes from Robojax.com
 Learn Arduino step by step in structured course with all material, wiring diagram and library
 all in once place. Purchase My course on Udemy.com http://robojax.com/L/?id=62
@@ -76,7 +76,7 @@ static const uint8_t D8   = 15;
 static const uint8_t D9   = 3;
 static const uint8_t D10  = 1;
 
-int relay1Pin = D1;//define a pin for relay
+int relay1Pin = D4;//define a pin for relay (D1)
 int relay2Pin = D0;//define a pin for relay
 
 int relay1State = 1;//initial state . 1 ON, 0 OFF
@@ -110,23 +110,30 @@ void handleRoot() {
   <title>Semáforo USF</title>\
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\
   <style>\
-  html,body{width:100%\;height:100%\;margin:0}*{box-sizing:border-box}.colorAll{background-color:#90ee90}.colorBtn{background-color:#add8e6}.angleButtdon,a{font-size:30px\;border:1px solid #ccc\;display:table-caption\;padding:7px 10px\;text-decoration:none\;cursor:pointer\;padding:5px 6px 7px 10px}a{display:block}.btn{margin:5px\;border:none\;display:inline-block\;vertical-align:middle\;text-align:center\;white-space:nowrap}";
-  
+  html,body{width:100%\;height:100%\;margin:0}*{box-sizing:border-box}.colorAll{background-color:#90ee90}.colorBtn{background-color:#add8e6}.angleButtdon,a{font-size:50px\;border:1px solid #ccc\;display:table-caption\;padding:7px 10px\;text-decoration:none\;cursor:pointer\;padding:5px 6px 7px 10px}a{display:block}.btn{margin:5px\;border:none\;display:inline-block\;vertical-align:middle\;text-align:center\;white-space:nowrap}";
+  HTML += "#ret {width:100px;height:200px;border:1px;border-radius: 10px;background-color:#434343;padding: 20px;}";
+  HTML += "#circleRED {width: 60px;height:60px;border-radius: 50px;background-color:red;padding: 20px;}";
+  HTML += "#circleGREEN {width:60px;height:60px;border-radius: 50px;background-color:green;padding: 20px;}";
   HTML +="</style></head><body><h1>Semáforo USF</h1>";
   
   if(relay1State){ //verde acesso
-    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=off'\" style=\"background-color:red\" type=\"button\" >";
-    HTML +=button1Title2;
-    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=on'\"  type=\"button\" disabled >";
-    HTML +=button1Title1; 
+    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=off'\" style=\"background-color:red;width: 300px;height:150px;border-radius: 5px;font-size:20px;\" type=\"button\" >";
+    HTML +=button1Title2 + "</div>";
+    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=on'\"  type=\"button\" style=\"display: none;\" disabled >";
+    //HTML +=button1Title1; 
+    HTML += "</div>";
+    HTML += "<div style=\"padding:20px; \"><div id=\"ret\"><div id=\"circleRED\" style=\"background-color: #331111;\"></div><br><div id=\"circleGREEN\" ></div></div></div>";
   }else{
-    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=off'\"  type=\"button\" disabled >";
-    HTML +=button1Title2;
-    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=on'\" style=\"background-color:green\" type=\"button\" >";
-    HTML +=button1Title1;      
+    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=off'\"  type=\"button\" style=\"display: none;\" disabled >";
+    //HTML +=button1Title2;
+    HTML += "</div>";
+    HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=on'\" style=\"background-color:green;width: 300px;height:150px;border-radius: 5px;font-size:20px;\" type=\"button\" >";
+    HTML +=button1Title1 + "</div>";
+    HTML += "<div style=\"padding:20px; \"><div id=\"ret\"><div id=\"circleRED\"></div><br><div id=\"circleGREEN\" style=\"background-color: #331111;\" ></div></div></div>"; 
   }
   HTML +="</a></div>";  
-  HTML +="</a></div></body></html>";
+  HTML +="</a></div>";
+  HTML += "</body></html>";
   server.send(200, "text/html", HTML);  
 }//handleRoot()
 
@@ -178,7 +185,6 @@ void setup(void) {
 
   if (MDNS.begin("robojaxESP8266")) {
     Serial.println("MDNS responder started");
-    Serial.println("access it via http://robojaxESP8266");
   }
 
   server.on("/", handleRoot);
