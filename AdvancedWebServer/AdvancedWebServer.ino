@@ -1,6 +1,6 @@
 /*
- * Contol a relay over WiFi using ESP8266 NodeMCU, D1 Mini to 
- * turn ON or OFF 2 AC bulb or 2 fan or other load using 2 channel relay
+ * Contol a relay over WiFi using ESP8266 NodeMCU to 
+ * turn ON or OFF 2 AC bulb using 2 channel relay
  * 
  * Watch Video instrution for this code:  https://youtu.be/F7mK587OQgI
  * Full explanation of this code and wiring diagram is available at
@@ -9,16 +9,6 @@
  * Written by Ahmad Shamshiri on Feb 22, 2020 at 15:25
  * in Ajax, Ontario, Canada. www.robojax.com
  * Adapted by Luísa Amaral and Hugo Leal
- * 
- * 
- * Get this code and other Arduino codes from Robojax.com
-Learn Arduino step by step in structured course with all material, wiring diagram and library
-all in once place. Purchase My course on Udemy.com http://robojax.com/L/?id=62
-
-If you found this tutorial helpful, please support me so I can continue creating 
-content like this. You can support me on Patreon http://robojax.com/L/?id=63
-
-or make donation using PayPal http://robojax.com/L/?id=64
 
  *  * This code is "AS IS" without warranty or liability. Free to be used as long as you keep this note intact.* 
  * This code has been download from Robojax.com
@@ -76,7 +66,7 @@ static const uint8_t D8   = 15;
 static const uint8_t D9   = 3;
 static const uint8_t D10  = 1;
 
-int relay1Pin = D4;//define a pin for relay (D1)
+int relay1Pin = D1;//define a pin for relay (D1)
 int relay2Pin = D0;//define a pin for relay
 
 int relay1State = 1;//initial state . 1 ON, 0 OFF
@@ -93,8 +83,8 @@ String button1Title2 ="Ativar luz vermelha";
 
 
 #ifndef STASSID
-#define STASSID "wifi name" // your WiFi SSID
-#define STAPSK  "wifi password" //your WiFi password
+#define STASSID "wifiname" // your WiFi SSID
+#define STAPSK  "wifipassword" //your WiFi password
 #endif
 
 const char *ssid = STASSID;
