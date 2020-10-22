@@ -76,7 +76,7 @@ static const uint8_t D8   = 15;
 static const uint8_t D9   = 3;
 static const uint8_t D10  = 1;
 
-int relay1Pin = D4;//define a pin for relay (D1)
+int relay1Pin = D1;//define a pin for relay (D1)
 int relay2Pin = D0;//define a pin for relay
 
 int relay1State = 1;//initial state . 1 ON, 0 OFF
@@ -93,8 +93,8 @@ String button1Title2 ="Ativar luz vermelha";
 
 
 #ifndef STASSID
-#define STASSID "wifi name" // your WiFi SSID
-#define STAPSK  "wifi password" //your WiFi password
+#define STASSID "" // your WiFi SSID
+#define STAPSK  "" //your WiFi password
 #endif
 
 const char *ssid = STASSID;
