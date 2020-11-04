@@ -82,13 +82,13 @@ String button1Title2 ="Ativar luz vermelha";
 
 
 
-#ifndef STASSID
-#define STASSID "wifiname" // your WiFi SSID
-#define STAPSK  "wifipassword" //your WiFi password
-#endif
-
-const char *ssid = STASSID;
-const char *password = STAPSK;
+//#ifndef STASSID
+//#define STASSID "Semaforo_USF" // your WiFi SSID
+//#define STAPSK  "usfsantajoana2020" //your WiFi password
+//#endif
+//
+//const char *ssid = STASSID;
+//const char *password = STAPSK;
 
 ESP8266WebServer server(80);
 
@@ -151,34 +151,26 @@ void setup(void) {
   pinMode(relay2Pin, OUTPUT);// define a pin as output for relay
   digitalWrite(relay1Pin, relay1State);//initial state either ON or OFF
   digitalWrite(relay2Pin, relay2State);//initial state either ON or OFF
-  
+  delay(1000);
   Serial.begin(115200);//initialize the serial monitor
 
   //Relay control ON OFF by Robojax.com
 
-    
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.println("");
-  
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
+//  Code for a connection to another wifi    
+  WiFi.mode(WIFI_AP);
+  Serial.print("Setting AP (Access Point)…");
+  // Remove the password parameter, if you want the AP (Access Point) to be open
+  WiFi.softAP("Semaforo_USF", "usfsantajoana2020");
 
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: http://");
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(IP);
+
+  // Print ESP8266 Local IP Address
   Serial.println(WiFi.localIP());
 
-  if (MDNS.begin("robojaxESP8266")) {
-    Serial.println("MDNS responder started");
-  }
-
   server.on("/", handleRoot);
-  server.on("/control", HTTP_GET, relayControl);         
+  server.on("/control", HTTP_GET, relayControl);
   server.onNotFound(handleNotFound);
   server.begin();
   Serial.println("HTTP server started");
@@ -186,9 +178,17 @@ void setup(void) {
 }//end of setup
 
 void loop(void) {
-  
+//  WiFiClient client = server.available();
+//  if (!client) {
+//    return;
+//  }
+//
+//  // Wait until the client sends some data
+//  while (!client.available()) {
+//    delay(1);
+//  }
   server.handleClient();
-  MDNS.update();
+  //MDNS.update();
 
   if(relay1State ==1)
   {
