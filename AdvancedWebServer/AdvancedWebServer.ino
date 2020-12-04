@@ -56,15 +56,8 @@
 
 static const uint8_t D0   = 16;
 static const uint8_t D1   = 5;
-static const uint8_t D2   = 4;
-static const uint8_t D3   = 0;
-static const uint8_t D4   = 2;
-static const uint8_t D5   = 14;
-static const uint8_t D6   = 12;
-static const uint8_t D7   = 13;
-static const uint8_t D8   = 15;
-static const uint8_t D9   = 3;
-static const uint8_t D10  = 1;
+
+int on = 0;
 
 int relay1Pin = D1;//define a pin for relay (D1)
 int relay2Pin = D0;//define a pin for relay
@@ -72,8 +65,8 @@ int relay2Pin = D0;//define a pin for relay
 int relay1State = 1;//initial state . 1 ON, 0 OFF
 int relay2State = 0;//initial state . 1 ON, 0 OFF
 
-String button1Title1 ="Ativar luz verde";
-String button1Title2 ="Ativar luz vermelha";
+//String button1Title1 ="Ativar luz verde";
+//String button1Title2 ="Ativar luz vermelha";
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -108,18 +101,18 @@ void handleRoot() {
   
   if(relay1State){ //verde acesso
     HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=off'\" style=\"background-color:red;width: 300px;height:150px;border-radius: 5px;font-size:20px;\" type=\"button\" >";
-    HTML +=button1Title2 + "</div>";
+    HTML +="Ativar luz vermelha </div>";
     HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=on'\"  type=\"button\" style=\"display: none;\" disabled >";
     //HTML +=button1Title1; 
     HTML += "</div>";
-    HTML += "<div style=\"padding:20px; \"><div id=\"ret\"><div id=\"circleRED\" style=\"background-color: #331111;\"></div><br><div id=\"circleGREEN\" ></div></div></div>";
+    //HTML += "<div style=\"padding:20px; \"><div id=\"ret\"><div id=\"circleRED\" style=\"background-color: #331111;\"></div><br><div id=\"circleGREEN\" ></div></div></div>";
   }else{
     HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=off'\"  type=\"button\" style=\"display: none;\" disabled >";
     //HTML +=button1Title2;
     HTML += "</div>";
     HTML +="<div class=\"btn\"><button onclick=\"location.href='/control?r1=on'\" style=\"background-color:green;width: 300px;height:150px;border-radius: 5px;font-size:20px;\" type=\"button\" >";
-    HTML +=button1Title1 + "</div>";
-    HTML += "<div style=\"padding:20px; \"><div id=\"ret\"><div id=\"circleRED\"></div><br><div id=\"circleGREEN\" style=\"background-color: #331111;\" ></div></div></div>"; 
+    HTML +="Ativar luz verde </div>";
+    //HTML += "<div style=\"padding:20px; \"><div id=\"ret\"><div id=\"circleRED\"></div><br><div id=\"circleGREEN\" style=\"background-color: #331111;\" ></div></div></div>"; 
   }
   HTML +="</a></div>";  
   HTML +="</a></div>";
@@ -128,22 +121,7 @@ void handleRoot() {
 }//handleRoot()
 
 void handleNotFound() {
-
-  String message = "File Not Found";
-  message += "URI: ";
-  message += server.uri();
-  message += "Method: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "Arguments: ";
-  message += server.args();
-  message += "";
-
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "";
-  }
-
-  server.send(404, "text/plain", message);
-
+ server.send(404, "text/plain", "Please Reconnect");
 }//end of handleNotFound()
 
 void setup(void) {
