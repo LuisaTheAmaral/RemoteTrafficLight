@@ -2,9 +2,6 @@
  * Contol a relay over WiFi using ESP8266 NodeMCU to 
  * turn ON or OFF 2 AC bulb using 2 channel relay
  * 
- * Watch Video instrution for this code:  https://youtu.be/F7mK587OQgI
- * Full explanation of this code and wiring diagram is available at
- * my Arduino Course at Udemy.com here: http://robojax.com/L/?id=62
 
  * Written by Ahmad Shamshiri on Feb 22, 2020 at 15:25
  * in Ajax, Ontario, Canada. www.robojax.com
