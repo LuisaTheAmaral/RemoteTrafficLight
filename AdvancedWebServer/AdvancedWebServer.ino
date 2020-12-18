@@ -2,9 +2,13 @@
  * Contol a relay over WiFi using ESP8266 NodeMCU to 
  * turn ON or OFF 2 AC bulb using 2 channel relay
  * 
+ * Watch Video instrution for this code:  https://youtu.be/F7mK587OQgI
+ * Full explanation of this code and wiring diagram is available at
+ * my Arduino Course at Udemy.com here: http://robojax.com/L/?id=62
 
  * Written by Ahmad Shamshiri on Feb 22, 2020 at 15:25
  * in Ajax, Ontario, Canada. www.robojax.com
+ * Best Wifi channel was created by Mael
  * Adapted by Luísa Amaral and Hugo Leal
 
  *  * This code is "AS IS" without warranty or liability. Free to be used as long as you keep this note intact.* 
@@ -61,6 +65,7 @@ int relay2Pin = D0;//define a pin for relay
 
 int relay1State = 1;//initial state . 1 ON, 0 OFF
 int relay2State = 0;//initial state . 1 ON, 0 OFF
+int counter = 0;
 
 //String button1Title1 ="Ativar luz verde";
 //String button1Title2 ="Ativar luz vermelha";
@@ -122,33 +127,18 @@ void handleNotFound() {
 }//end of handleNotFound()
 
 void setup(void) {
+  Serial.println("new code");
   pinMode(relay1Pin, OUTPUT);// define a pin as output for relay
   pinMode(relay2Pin, OUTPUT);// define a pin as output for relay
   digitalWrite(relay1Pin, relay1State);//initial state either ON or OFF
   digitalWrite(relay2Pin, relay2State);//initial state either ON or OFF
-  delay(1000);
   Serial.begin(115200);//initialize the serial monitor
+  connect_network();
 
   //Relay control ON OFF by Robojax.com
 
 //  Code for a connection to another wifi    
-  WiFi.mode(WIFI_AP);
-  Serial.print("Setting AP (Access Point)…");
-  // Remove the password parameter, if you want the AP (Access Point) to be open
-  WiFi.softAP("Semaforo_USF", "usfsantajoana2020");
-
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(IP);
-
-  // Print ESP8266 Local IP Address
-  Serial.println(WiFi.localIP());
-
-  server.on("/", handleRoot);
-  server.on("/control", HTTP_GET, relayControl);
-  server.onNotFound(handleNotFound);
-  server.begin();
-  Serial.println("HTTP server started");
+  
 
 }//end of setup
 
@@ -162,9 +152,16 @@ void loop(void) {
 //  while (!client.available()) {
 //    delay(1);
 //  }
+  //Serial.println("Hello MIgas");
+  counter +=1;
+  if (counter % 600 == 0){
+    //Serial.println("passed");
+    connect_network();
+    counter=1;
+  }
   server.handleClient();
   //MDNS.update();
-
+  
   if(relay1State ==1)
   {
     digitalWrite(relay1Pin, LOW);
@@ -182,8 +179,8 @@ void loop(void) {
   }
 
    delay(100);
-   //Serial.print("Relay1:");Serial.print (relay1State);
-   //Serial.print(" Relay2:");Serial.println(relay2State);   
+   ////////////Serial.print("Relay1:");Serial.print (relay1State);
+   //Serial.print(" Relay2:");//Serial.print(relay2State);   
 }//end of loop
 
 /*
@@ -207,3 +204,118 @@ void relayControl() {
 
   handleRoot();
 }//relayControl() end
+
+
+void connect_network(){
+  WiFi.mode(WIFI_AP);
+  //Serial.print("Setting AP (Access Point)…");
+  // Remove the password parameter, if you want the AP (Access Point) to be open
+
+  byte best_channel = channel_chooser();
+
+  while (best_channel == 255) {         // while the scan isn't finished
+    best_channel = channel_chooser();
+    delay(0);                           // needed to avoid a WDT trigger, yields the process time to background esp tasks
+  }
+
+  
+  WiFi.softAP("redeSemaforo","senha", best_channel);
+  //Serial.print("best");
+  //Serial.print(best_channel);
+  //Serial.print("channel");
+  //Serial.print(WiFi.channel());
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  //Serial.print(IP);
+
+  // Print ESP8266 Local IP Address
+  //Serial.print(WiFi.localIP());
+
+  server.on("/", handleRoot);
+  server.on("/control", HTTP_GET, relayControl);
+  server.onNotFound(handleNotFound);
+  server.begin();
+  //Serial.print("HTTP server started");
+}
+
+// This fuction was created by Mael 
+// http://maelpoureau.com/ESP8266_channel_chooser/
+// We
+byte channel_chooser() {
+  int scan_result = WiFi.scanComplete();
+
+  if (scan_result < 0) {       //  if not scanning return 255 and launch scan
+    WiFi.scanNetworks(true);
+    return 255;
+
+  } else if (scan_result == 0) { // return 1 if found no networks
+
+    return 1;
+
+  } else {
+
+    // create the list of channel weights
+
+    int channels[14][2];
+
+    for (byte a = 1; a < 14; a++) {
+      channels[a][0] = a;
+      channels[a][1] = 0;
+    }
+
+    for (byte a = 0; a < scan_result; a++) {
+      channels[WiFi.channel(a)][0] = WiFi.channel(a);
+      channels[a][1] += 100 + WiFi.RSSI(a);
+    }
+
+    // adding adgacent channels to channel weight
+
+    for (byte a = 1; a < 14; a++) {
+      if (a > 1) {
+        channels[a][1] += channels[a - 1][1] / 2;
+      }
+      if (a > 2) {
+        channels[a][1] += channels[a - 2][1] / 4;
+      }
+      if (a < 13) {
+        channels[a][1] += channels[a + 1][1] / 2;
+      }
+      if (a < 12) {
+        channels[a][1] += channels[a + 2][1] / 4;
+      }
+    }
+
+    // bubble sort the list by weight
+
+    bool swapped = 1;
+    while (swapped) {
+      for (byte a = 1; a < 13; a++) {
+        if (a == 1) {
+          swapped = 0;
+        }
+        if (channels[a][1] > channels[a + 1][1]) {
+          byte buf = channels[a][0];
+          channels[a][0] = channels[a + 1][0];
+          channels[a + 1][0] = buf;
+
+          buf = channels[a][1];
+          channels[a][1] = channels[a + 1][1];
+          channels[a + 1][1] = buf;
+          swapped = 1;
+        }
+      }
+    }
+
+    // print the sorted results
+//
+//    for (byte a = 1; a < 14; a++) {
+//      Serial.print(channels[a][0]);
+//      Serial.print(" - ");
+//      /Serial.print(channels[a][1]);
+//    }
+
+    WiFi.scanDelete();
+
+    return channels[1][0];
+  }
+} 
